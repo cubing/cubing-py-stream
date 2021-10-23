@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-BaseGrip = namedtuple("BaseGrip", "dim grip name")
+BaseGrip = namedtuple("BaseGrip", "grip dim name")
 
 
 class Grip(BaseGrip):
@@ -28,7 +28,7 @@ class Grip(BaseGrip):
 
     @classmethod
     def get_layer(cls, layer_name):
-        print(repr(layer_name))
+        # print(repr(layer_name))
         # todo, strip numbers and quotes from the end
         layer_name = layer_name[0]
         results = [layer for layer in cls.layer_cache

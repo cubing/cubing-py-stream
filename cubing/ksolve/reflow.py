@@ -14,7 +14,7 @@ def json_reflow(s):
     becomes: [a, b, c]. Pretty simple.
     """
     import re
-    matches = re.findall(r'\[[\"\'A-Za-z0-9,\s\n]+\]', s)
+    matches = re.findall(r'\[[\"\'\_\-A-Za-z0-9,\s\n]+\]', s)
     for match in matches:
         # print(type(match))
         repl = re.sub(r'\n\s+', ' ', match)
@@ -28,8 +28,8 @@ def ksolve_reflow(d):
     try:
         return dict([
             (orbit_name, dict(
-                permutation=[i + 1 for i in orbit_trans["permutation"]],
-                orientation=[i for i in orbit_trans["orientation"]]))
+                permutation=["?" if i == -1 else i + 1 for i in orbit_trans["permutation"]],
+                orientation=["?" if i == -1 else i for i in orbit_trans["orientation"]]))
             for orbit_name, orbit_trans in d.items()
         ])
     except TypeError:
@@ -66,6 +66,11 @@ def ksolve_script(d, header="Move", header_name="A",
             if any(orbit_trans['orientation']):
                 middle += ' '.join(map(str, orbit_trans['orientation'])) + '\n'
         elif any(orbit_trans['orientation']):
+            middle += orbit_name + '\n'
+            middle += ' '.join(map(str, orbit_trans['permutation'])) + '\n'
+            middle += ' '.join(map(str, orbit_trans['orientation'])) + '\n'
+        else:
+            # Pattern or wildcards present
             middle += orbit_name + '\n'
             middle += ' '.join(map(str, orbit_trans['permutation'])) + '\n'
             middle += ' '.join(map(str, orbit_trans['orientation'])) + '\n'

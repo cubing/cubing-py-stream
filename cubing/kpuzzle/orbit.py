@@ -7,6 +7,10 @@ BaseOrbitDef = namedtuple('OrbitDef', 'numPieces orientations')
 BaseOrbit = namedtuple('Orbit', 'permutation orientation')
 
 
+# OrbitSequence = list[int]
+# OrbitTransformation = tuple[OrbitSequence, OrbitSequence]
+# - permutation : OrbitSequence
+# - orientation : OrbitSequence
 class Orbit(BaseOrbit):
 
     def __getstate__(self):
@@ -112,19 +116,29 @@ class Orbit(BaseOrbit):
             negate=False,
             numPieces=None,
             orientations=None):
+        if '_' in name1:
+            name1 = tuple(name1.split('_'))
+        if '_' in name2:
+            name2 = tuple(name2.split('_'))
+        # print(repr(name1), repr(name2))
         if tuple(name1) == tuple(name2):
             return 0
         elif orientations == 2:
-            print(name1, name2)
-            if tuple(name1[0:2]) == tuple([name1[1], name1[0]]):
+            if tuple(name1[0:2]) == tuple([name2[1], name2[0]]):
                 return 1
             else:
                 raise ValueError("Please use eoNegate = True")
         elif orientations == 3:
-            if tuple(name1[0:2]) == tuple([name1[1], name1[2], name1[0]]):
+            if tuple(name1[0:3]) == tuple([name2[1], name2[2], name2[0]]):
                 return 1
-            elif tuple(name1[0:2]) == tuple([name1[2], name1[0], name1[1]]):
+            elif tuple(name1[0:3]) == tuple([name2[2], name2[0], name2[1]]):
                 return 2
+            elif tuple(name1[0:3]) == tuple([name2[1], name2[0], name2[2]]) and negate:
+                return 2
+            elif tuple(name1[0:3]) == tuple([name2[2], name2[1], name2[0]]) and negate:
+                return 1
+            elif tuple(name1[0:3]) == tuple([name2[0], name2[2], name2[1]]) and negate:
+                return 0
             else:
                 raise ValueError("Please use coNegate = True")
         else:
@@ -146,14 +160,47 @@ class Orbit(BaseOrbit):
             for i in range(numPieces))
 
     @classmethod
+    def tag_facelet(cls, f, centers=None):
+        cfunc = (lambda x: x) if centers is None else centers.index
+        facelet_tag = (
+            int(f[0]) if f[0].isdigit() else 1,
+            cfunc(f[1:] if f[0].isdigit() else f))
+        return (facelet_tag, f)
+    
+    @classmethod
+    def tag_cubelet(cls, piece, centers=None):
+        piece2 = list(sorted([
+            cls.tag_facelet(facelet, centers=centers)
+            for facelet in cls.split_cubelet(piece)
+        ]))
+        cubelet_tag, piece3 = zip(*piece2) # unzip
+        return (cubelet_tag, '_'.join(piece3))
+    
+    @classmethod
+    def split_cubelet(cls, piece):
+        return piece.split('_') if '_' in piece else list(piece)
+    
+    @classmethod
+    def sort_piece(cls, orbit, centers=None):
+        """sort1d"""
+        orbit2 = list([
+            cls.tag_cubelet(piece, centers=centers)
+            for piece in orbit
+        ])
+        _, orbit3 = zip(*orbit2) # unzip
+        return orbit3        
+
+    @classmethod
     def find_permute(
             cls, solved1, solved2,
             negate=False,
             numPieces=None,
             orientations=None):
+        perm1 = cls.sort_piece(solved1.permutation)
+        perm2 = cls.sort_piece(solved2.permutation)
         return tuple(
-            solved1.permutation.index(
-                solved2.permutation[i])
+            perm1.index(
+                perm2[i])
             for i in range(numPieces))
 
     @classmethod
@@ -207,7 +254,7 @@ class Orbit(BaseOrbit):
                  orientations=orbit['orientations']))
             for oname, orbit in orbits.items()]))
 
-    def match(self, solv, patt):
+    def match_old(self, solv, patt):
         for act, sol, pat in zip(
                 self.permutation,
                 solv.permutation,
@@ -221,10 +268,25 @@ class Orbit(BaseOrbit):
             if pat == 0 and act != sol:
                 return False
         return True
+    
+    def match(self, solv):
+        """
+        This implementation must match
+        <https://github.com/Cride5/visualcube/blob/master/cube_lib.php#L964>
+        which suppoorts (-1) as a wildcard.
 
-    def match_trans(self, pattern, orbits=None):
-        for orbit_name in orbits.keys():
-            if not getattr(self, orbit_name).match(
-                    getattr(pattern, orbit_name)):
+        This implementation shouldn't match
+        <https://github.com/cubing/twsearch/blob/main/src/puzdef.h#L102>
+        which doesn't support (-1).
+        """
+        for act, sol in zip(
+                self.permutation,
+                solv.permutation):
+            if act != -1 and sol != -1 and act != sol:
+                return False
+        for act, sol in zip(
+                self.orientation,
+                solv.orientation):
+            if act != -1 and sol != -1 and act != sol:
                 return False
         return True

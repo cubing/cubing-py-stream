@@ -12,7 +12,7 @@ with open(os.path.join(
 def is_ll(cls, t):
     s = cls.new()
     p = cls.from_dict(KPATTERN['patterns']['LL'])
-    return t.match(s, p)
+    return t.match_old(s, p)
 
 
 def is_f2l(cls, t):
@@ -32,11 +32,23 @@ def is_cross(cls, t):
     p = cls.from_dict(KPATTERN['patterns']['CROSS'])
     return t.match(s, p)
 
+def from_alg2(cls, steps):
+    if steps.startswith('[') and \
+       steps.endswith(']'):
+        steps = steps.lstrip('[')
+        steps = steps.rstrip(']')
+        # print(repr(steps))
+        if ',' in steps:
+            a, b = steps.split(',')
+            # print(repr(a), repr(b))
+            return cls.from_alg(a).alg(b)(cls.from_alg(b).alg(a).__neg__())
+    return None
 
 if __name__ == '__main__':
     # from birdf2l import unhand
-    from birdpuz.x3_speffz import Transform as T
+    from cubing.x3_speffz import Transform as X3SP
     for line in sys.stdin.readlines():
+        line = line.strip()
         try:
             line = line.strip()
             parts = line.split(' ')
@@ -47,14 +59,17 @@ if __name__ == '__main__':
             line = ' '.join(parts)
             # line = unhand.optimize(line)
             # print(line)
-            t = T.from_alg(line)
-            # print(repr(t))
-            # if is_ll(T, t):
-            if is_cmll(T, t) and not is_ll(T, t):
+            t = X3SP.from_alg(line)
+            # t = from_alg2(X3SP, line)
+            #if t is None:
+            #    continue
+            if is_ll(X3SP, t):
                 print(line)
-            t = t.rotate("y2")
-            # if is_ll(T, t):
-            if is_cmll(T, t) and not is_ll(T, t):
-                print(line, "y2")
+            # if is_cmll(X3SP, t) and not is_ll(X3SP, t):
+            #     print(line)
+            # t = t.rotate("y2")
+            # if is_ll(X3SP, t):
+            # if is_cmll(X3SP, t) and not is_ll(X3SP, t):
+            #     print(line, "y2")
         except Exception as exc:
             print(repr(exc))

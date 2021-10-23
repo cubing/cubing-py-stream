@@ -39,6 +39,13 @@ def parse_line(line, result, lines):
             result["ignoreSets"] = {}
         if name not in result["ignoreSets"]:
             result["ignoreSets"][name] = {}
+    elif line.startswith("Scramble"):
+        _, name = line.split(' ')
+        name = name.strip()
+        if "scrambles" not in result:
+            result["scrambles"] = {}
+        if name not in result["scrambles"]:
+            result["scrambles"][name] = {}
     elif line.startswith("Move"):
         _, name = line.split(' ')
         name = name.strip()
@@ -52,6 +59,8 @@ def parse_line(line, result, lines):
         cmd = list(result.keys())[0]
         if cmd == "moves":
             ksolve_orbit.do_named_cmd("moves", result, lines)
+        elif cmd == "scrambles":
+            ksolve_orbit.do_named_cmd("scrambles", result, lines)
         elif cmd == "solved":
             ksolve_orbit.do_simple_cmd("solved", result, lines)
         elif cmd == "solvedString":

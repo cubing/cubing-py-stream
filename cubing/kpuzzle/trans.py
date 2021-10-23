@@ -30,7 +30,13 @@ class BaseTransform:
                 other._asdict(),
                 orbits=type(self).kpuzzle.orbits)
         )
+    
+    def __matmul__(self, other):
+        return self.__call__(other)
 
+    def __pow__(self, other):
+        raise NotImplementedError
+    
     def __neg__(self):
         return type(self).from_dict(
             Orbit.inverse_all(
@@ -148,10 +154,14 @@ class BaseTransform:
             cls.move_cache[move] = cls.from_dict(move_transform)
             cls.move_cache[move + "2"] = cls.from_alg(
                 "{} {}".format(move, move))
-            cls.move_cache[move + "2'"] = cls.from_alg(
-                "{} {}".format(move, move))
-            cls.move_cache[move + "'"] = cls.from_alg(
+            cls.move_cache[move + "3"] = cls.from_alg(
                 "{} {} {}".format(move, move, move))
+            cls.move_cache[move + "3'"] = cls.from_alg(
+                "{} {} {}".format(move, move, move)).__neg__()
+            cls.move_cache[move + "2'"] = cls.from_alg(
+                "{} {}".format(move, move)).__neg__()
+            cls.move_cache[move + "'"] = cls.from_alg(
+                "{}".format(move)).__neg__()
 
     def reclass(self, cls):
         return cls.from_dict(self.__getstate__())
@@ -200,6 +210,12 @@ class BaseTransform:
                              nocenter=nocenter))
         return self
 
+    @classmethod
+    def from_ksolve(cls, reader, header=None):
+        from ..ksolve.puzdef import parse_reader
+        results = parse_reader(reader)
+        return cls.from_dict(list(results[0][header].items())[0][1])
+        
     def invert_centers(self):
         return self._replace(
             CENTERS=self.CENTERS._replace(
@@ -211,3 +227,32 @@ class BaseTransform:
             CORNERS=self.CORNERS._replace(
                 orientation=tuple((3 - i) % 3
                                   for i in self.CORNERS.orientation)))
+
+    def match_old(self, solved, pattern, orbits=None):
+        if orbits is None:
+            orbits = self.kpuzzle.orbits
+        for orbit_name in orbits.keys():
+            if not getattr(self, orbit_name).match_old(
+                    getattr(solved, orbit_name),
+                    getattr(pattern, orbit_name)):
+                return False
+        return True
+
+    
+    def match(self, solved, orbits=None):
+        """
+        This implementation must match
+        <https://github.com/Cride5/visualcube/blob/master/cube_lib.php#L964>
+        which suppoorts (-1) as a wildcard.
+
+        This implementation shouldn't match
+        <https://github.com/cubing/twsearch/blob/main/src/puzdef.h#L102>
+        which doesn't support (-1).
+        """
+        if orbits is None:
+            orbits = self.kpuzzle.orbits
+        for orbit_name in orbits.keys():
+            if not getattr(self, orbit_name).match(
+                    getattr(solved, orbit_name)):
+                return False
+        return True

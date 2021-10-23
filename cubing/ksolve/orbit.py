@@ -3,20 +3,23 @@ def parse_numbers(*plines):
     pline = plines[0]
     ps = pline.split(' ')
     ps = [p for p in ps if p]
-    if len(ps) and not ps[0].isdigit():
+    wildcards = ["?", "-1"]
+    if len(ps) and not ps[0].isdigit() \
+       and not ps[0].startswith(wildcards[0]) \
+       and not ps[0].startswith(wildcards[1]):
         ps = ' '.join(plines).split(' ')
         ps = [p for p in ps if p]
         return {
             "permutation": ps,
             "orientation": None}
     else:
-        ps = [int(p) - 1 for p in ps]
+        ps = [-1 if p in wildcards else int(p) - 1 for p in ps]
         if not len(plines[1:]):
             os = [0 for _ in range(len(ps))]
         else:
             oline = plines[1]
             os = oline.split(' ')
-            os = [int(o) for o in os]
+            os = [-1 if o in wildcards else int(o) for o in os]
         return {
             "permutation": ps,
             "orientation": os}
