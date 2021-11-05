@@ -1,2 +1,5 @@
 /python.localhost-key.pem
 /python.localhost.pem
+__pycache__
+*.pyc
+*~

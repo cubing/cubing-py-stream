@@ -1,0 +1,149 @@
+# Copyright 2021 Andrew Robbins.
+Name Speffz3x3x3CubePuzzle
+
+Set EDGES 12 2
+Set CORNERS 8 3
+Set CENTERS 6 4
+
+SolvedString
+EDGES
+ UB UR UF UL FL FR BR BL DF DR DB DL
+ 0 0 0 0 1 0 1 0 0 0 0 0
+CORNERS
+ UBL URB UFR ULF DFL DRF DBR DLB
+CENTERS
+ U L F R B D
+End
+
+Solved
+EDGES
+1 2 3 4 5 6 7 8 9 10 11 12
+0 0 0 0 1 0 1 0 0 0 0 0
+End
+
+Move B
+EDGES
+7 2 3 4 5 6 11 1 9 10 8 12
+0 0 0 0 0 0 0 1 0 0 1 0
+CORNERS
+2 7 3 4 5 6 8 1
+1 2 0 0 0 0 1 2
+CENTERS
+1 2 3 4 5 6
+0 0 0 0 1 0
+End
+
+Move S
+EDGES
+1 4 3 12 5 6 7 8 9 2 11 10
+0 1 0 1 0 0 0 0 0 1 0 1
+CENTERS
+2 6 3 1 5 4
+1 1 0 1 0 1
+End
+
+Move F
+EDGES
+1 2 5 4 9 3 7 8 6 10 11 12
+0 0 0 0 0 1 0 0 1 0 0 0
+CORNERS
+1 2 4 5 6 3 7 8
+0 0 1 2 1 2 0 0
+CENTERS
+1 2 3 4 5 6
+0 0 1 0 0 0
+End
+
+Move D
+EDGES
+1 2 3 4 5 6 7 8 12 9 10 11
+CORNERS
+1 2 3 4 8 5 6 7
+CENTERS
+1 2 3 4 5 6
+0 0 0 0 0 1
+End
+
+Move E
+EDGES
+1 2 3 4 8 5 6 7 9 10 11 12
+CENTERS
+1 5 2 3 4 6
+End
+
+Move U
+EDGES
+4 1 2 3 5 6 7 8 9 10 11 12
+CORNERS
+4 1 2 3 5 6 7 8
+CENTERS
+1 2 3 4 5 6
+1 0 0 0 0 0
+End
+
+Move L
+EDGES
+1 2 3 8 4 6 7 12 9 10 11 5
+0 0 0 0 1 0 0 0 0 0 0 1
+CORNERS
+8 2 3 1 4 6 7 5
+2 0 0 1 2 0 0 1
+CENTERS
+1 2 3 4 5 6
+0 1 0 0 0 0
+End
+
+Move M
+EDGES
+11 2 1 4 5 6 7 8 3 10 9 12
+1 0 1 0 0 0 0 0 1 0 1 0
+CENTERS
+5 2 1 4 6 3
+2 0 0 0 2 0
+End
+
+Move R
+EDGES
+1 6 3 4 5 10 2 8 9 7 11 12
+0 0 0 0 0 0 1 0 0 1 0 0
+CORNERS
+1 3 6 4 5 7 2 8
+0 1 2 0 0 1 2 0
+CENTERS
+1 2 3 4 5 6
+0 0 0 1 0 0
+End
+
+Move x
+EDGES
+3 6 9 5 12 10 2 4 11 7 1 8
+1 0 1 1 1 0 1 0 1 1 1 0
+CORNERS
+4 3 6 5 8 7 2 1
+2 1 2 1 2 1 2 1
+CENTERS
+3 2 6 4 1 5
+0 3 0 1 2 2
+End
+
+Move y
+EDGES
+4 1 2 3 6 7 8 5 10 11 12 9
+CORNERS
+4 1 2 3 6 7 8 5
+CENTERS
+1 3 4 5 2 6
+1 0 0 0 0 3
+End
+
+Move z
+EDGES
+8 4 5 12 9 3 1 11 6 2 7 10
+1 1 0 1 0 1 0 1 1 1 0 1
+CORNERS
+8 1 4 5 6 3 2 7
+1 2 1 2 1 2 1 2
+CENTERS
+2 6 3 1 5 4
+1 1 1 1 3 1
+End
